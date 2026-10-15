@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    # Add required reviewers to this GitHub environment for an approval gate
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -e ".[dev]"
+      - run: pytest
+
+      - uses: databricks/setup-cli@main
+
+      - name: Deploy bundle
+        run: databricks bundle deploy -t prod
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+          BUNDLE_VAR_host: ${{ secrets.DATABRICKS_HOST }}
+          BUNDLE_VAR_prod_service_principal: ${{ secrets.DATABRICKS_CLIENT_ID }}

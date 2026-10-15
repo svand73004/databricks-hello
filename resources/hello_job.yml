@@ -1,0 +1,23 @@
+resources:
+  jobs:
+    hello_job:
+      name: hello_job_${bundle.target}
+
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: Europe/Brussels
+        pause_status: PAUSED
+
+      tasks:
+        - task_key: main
+          environment_key: default
+          python_wheel_task:
+            package_name: hello_bundle
+            entry_point: main
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "3"
+            dependencies:
+              - ../dist/*.whl

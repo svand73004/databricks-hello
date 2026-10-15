@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -e ".[dev]"
+
+      - run: ruff check .
+      - run: pytest
+
+      - uses: databricks/setup-cli@main
+
+      - name: Validate bundle
+        run: databricks bundle validate -t prod
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+          BUNDLE_VAR_host: ${{ secrets.DATABRICKS_HOST }}
+          BUNDLE_VAR_prod_service_principal: ${{ secrets.DATABRICKS_CLIENT_ID }}
