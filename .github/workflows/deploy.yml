@@ -27,5 +27,5 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
           DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
-          BUNDLE_VAR_host: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_AUTH_TYPE: oauth-m2m
           BUNDLE_VAR_prod_service_principal: ${{ secrets.DATABRICKS_CLIENT_ID }}
