@@ -7,12 +7,10 @@ include:
 artifacts:
   default:
     type: whl
-    build: python -m build --wheel
+    build: uv build --wheel
     path: .
 
 variables:
-  host:
-    description: Workspace URL
   prod_service_principal:
     description: Application (client) ID of the prod service principal
     default: ""
@@ -22,13 +20,8 @@ targets:
     # Each developer gets a private, prefixed copy of the job
     mode: development
     default: true
-    workspace:
-      host: ${var.host}
 
   prod:
     mode: production
-    workspace:
-      host: ${var.host}
-      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
     run_as:
       service_principal_name: ${var.prod_service_principal}
