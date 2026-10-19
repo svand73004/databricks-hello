@@ -1,0 +1,12 @@
+resources:
+  pipelines:
+    weather_pipeline:
+      name: weather_pipeline_${bundle.target}
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      configuration:
+        source_table: ${var.catalog}.${var.schema}.daily_weather
+      libraries:
+        - file:
+            path: ../pipelines/monthly_weather.py

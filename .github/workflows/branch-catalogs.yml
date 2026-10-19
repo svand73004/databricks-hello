@@ -1,0 +1,28 @@
+name: Branch catalogs
+
+# Fires when a branch (or tag) is created; only works once this file is on the default branch
+on:
+  create:
+
+jobs:
+  clone-catalogs:
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install databricks-sdk databricks-sql-connector
+
+      - name: Shallow clone prd catalogs for ${{ github.event.ref }}
+        run: python scripts/clone_catalogs.py --branch "${BRANCH}"
+        env:
+          BRANCH: ${{ github.event.ref }}
+          DATABRICKS_WAREHOUSE_ID: d20c475e4924b5c9
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+          DATABRICKS_AUTH_TYPE: oauth-m2m

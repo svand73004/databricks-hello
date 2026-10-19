@@ -1,0 +1,40 @@
+resources:
+  jobs:
+    weather_job:
+      name: weather_job_${bundle.target}
+
+      schedule:
+        quartz_cron_expression: "0 0 7 * * ?"
+        timezone_id: Europe/Brussels
+        pause_status: PAUSED
+
+      tasks:
+        - task_key: ingest_weather
+          environment_key: default
+          python_wheel_task:
+            package_name: hello_bundle
+            entry_point: ingest_weather
+            parameters:
+              - --catalog
+              - ${var.catalog}
+              - --schema
+              - ${var.schema}
+
+        - task_key: refresh_monthly_stats
+          depends_on:
+            - task_key: ingest_weather
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.weather_pipeline.id}
+
+        - task_key: refresh_monthly_stats_sql
+          depends_on:
+            - task_key: ingest_weather
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.weather_pipeline_sql.id}
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "3"
+            dependencies:
+              - ../dist/*.whl

@@ -14,12 +14,21 @@ variables:
   prod_service_principal:
     description: Application (client) ID of the prod service principal
     default: ""
+  catalog:
+    description: Unity Catalog catalog for the pipeline tables
+    default: workspace
+  schema:
+    description: Schema for the pipeline tables (created if missing)
+    default: weather
 
 targets:
   dev:
     # Each developer gets a private, prefixed copy of the job
     mode: development
     default: true
+    variables:
+      # Private schema per developer, e.g. workspace.weather_dev_stefan
+      schema: weather_dev_${workspace.current_user.short_name}
 
   prod:
     mode: production

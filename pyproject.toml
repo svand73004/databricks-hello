@@ -6,15 +6,17 @@ build-backend = "setuptools.build_meta"
 name = "hello_bundle"
 version = "0.1.0"
 requires-python = ">=3.10"
+dependencies = ["requests"]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff", "build"]
+dev = ["pytest", "ruff", "build", "databricks-sdk", "databricks-sql-connector"]
 
 [project.scripts]
 main = "hello_bundle.main:main"
+ingest_weather = "hello_bundle.weather_job:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "scripts"]
