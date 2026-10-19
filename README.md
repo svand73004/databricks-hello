@@ -9,7 +9,7 @@ src/hello_bundle/      Python package (built into a wheel)
   transforms.py        pure-Python logic, unit tested without Spark
 tests/                 pytest unit tests
 resources/hello_job.yml  job definition (serverless, daily 06:00 Brussels, paused)
-databricks.yml         bundle config: dev + prod targets
+databricks.yml         buprod targets
 .github/workflows/     ci.yml (PRs) and deploy.yml (main -> prod)
 ```
 
@@ -17,8 +17,8 @@ databricks.yml         bundle config: dev + prod targets
 
 | Tool | Why | Install (macOS) |
 |------|-----|-----------------|
-| Python 3.10+ (3.11 recommended, same as CI) | run tests | `brew install python@3.11` |
-| [uv](https://docs.astral.sh/uv/) | the bundle builds the wheel with `uv build --wheel` | `brew install uv` |
+| Python 3.10+ (3.11 recommended, same as CI) | run tests (uv can also install it: `uv python install 3.11`) | `brew install python@3.11` |
+| [uv](https://docs.astral.sh/uv/) | manages the virtualenv/dependencies, and the bundle builds the wheel with `uv build --wheel` | `brew install uv` |
 | [Databricks CLI](https://docs.databricks.com/dev-tools/cli/install.html) v0.218+ | validate / deploy / run the bundle | `brew tap databricks/tap && brew install databricks` |
 | git + a GitHub account | CI/CD | `brew install git` |
 
@@ -56,11 +56,10 @@ role on the SP.
 ## 3. Local development (dev target)
 
 ```bash
-# Python env + tests
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-ruff check .
-pytest
+# Python env + tests (uv creates .venv and installs from uv.lock)
+uv sync --extra dev
+uv run ruff check .
+uv run pytest
 
 # Authenticate the CLI with your own user (opens a browser, stores a profile in ~/.databrickscfg)
 databricks auth login --host https://<your-workspace>.cloud.databricks.com --profile dev
